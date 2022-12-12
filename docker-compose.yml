@@ -1,0 +1,44 @@
+version: "3"
+
+services:  
+  node-1:
+    build:
+      context: .
+      target: app-blockchain
+    command: python app-blockchain/manage.py runserver 0.0.0.0:8000
+    image: app-blockchain:lastest
+    environment:
+      PYTHONUNBUFFERED: 1
+      PYTHONDONTWRITEBYTECODE: 0
+      ENVIRONMENT_TYPE: development
+    container_name: node-1
+    volumes:
+      - ./app-blockchain:/usr/src/app-blockchain
+    ports:
+      - 8000:8000
+    networks:
+      - block-chain
+
+  node-2:
+    build:
+      context: .
+      target: app-blockchain
+    command: python app-blockchain/manage.py runserver 0.0.0.0:8000
+    image: app-blockchain:lastest
+    environment:
+      PYTHONUNBUFFERED: 1
+      PYTHONDONTWRITEBYTECODE: 0
+      ENVIRONMENT_TYPE: development
+    container_name: node-2
+    volumes:
+      - ./app-blockchain:/usr/src/app-blockchain
+    ports:
+      - 8001:8000
+    networks:
+      - block-chain
+
+
+
+networks:
+  block-chain:
+    driver: bridge

@@ -1,0 +1,6 @@
+app-blockchain/*/__pycache__
+app-blockchain/__pycache__
+app-blockchain/*/*/__pycache__
+___app
+node_server.py
+test.py

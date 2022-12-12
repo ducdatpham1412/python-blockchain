@@ -1,0 +1,174 @@
+<html>
+    <head>
+        <title>Add transaction</title>
+    </head>
+
+    <body>
+        <div class="input_view">
+            <input type="text" class="input_box" placeholder="Content farmer" />
+            <div class="btn_add_transaction" onclick="addNewTransaction()">
+                <p class="text_add_transaction">Add new transaction</p>
+            </div>
+            <div class="btn_mine" onclick="mine()">
+                <p class="text_add_transaction">Mine</p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="mine_view">
+            <div class="btn_fetch" onclick="fetchBlockChain()">
+                <p class="text_add_transaction">FETCH</p>
+            </div>
+            <h1>List blocks in chain are:</h1>
+            <div class="list_block_box"></div>
+        </div>
+    </body>
+
+    <script>
+        const addNewTransaction = async () => {
+            const content =
+                document.getElementsByClassName("input_box")[0].value;
+
+            document.getElementsByClassName("input_box")[0].value = "";
+
+            const data = {
+                content,
+                creator: 1, // suppose creator_id = 1
+            };
+            try {
+                await fetch(
+                    "http://localhost:8000/transaction/new-transaction",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data),
+                    }
+                );
+            } catch (err) {
+                alert(`Error adding new transaction: ${err}`);
+            }
+        };
+
+        const mine = async () => {
+            try {
+                await fetch("http://localhost:8000/transaction/mine");
+            } catch (err) {
+                alert(`Error while mining transactions: ${err}`);
+            }
+        };
+
+        const fetchBlockChain = async () => {
+            try {
+                const temp = await fetch(
+                    "http://127.0.0.1:8000/transaction/get-blocks-peers"
+                );
+                const res = await temp.json();
+                console.log("response: ", res);
+                const innerHTML = res.chain.map(
+                    (item) => `
+                    <div class="block_part">
+                        <p>Hash: ${item.hash}</p>
+                        <p>Timestamp: ${item.timestamp}</p>
+                        <div>
+                            <p>Transactions: </p>
+                            ${item.transactions.map(
+                                (tx) => `
+                                <p>${tx.content} - ${tx.created}</p>
+                            `
+                            )}
+                        </div>
+                    </div>
+                `
+                );
+
+                document.getElementsByClassName("list_block_box")[0].innerHTML =
+                    innerHTML;
+            } catch (err) {
+                alert(`Error while fetching blockchain: ${err}`);
+            }
+        };
+    </script>
+
+    <style>
+        body {
+            display: flex;
+            flex-direction: row;
+            margin: 0px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+                "Helvetica Neue", sans-serif;
+        }
+        div {
+            display: flex;
+            flex-direction: column;
+        }
+        .input_view {
+            flex: 1;
+            align-items: center;
+        }
+        .mine_view {
+            flex: 0.5;
+            align-items: flex-start;
+            padding: 0px 50px 0px 20px;
+        }
+        .input_box {
+            width: 80%;
+            margin-top: 100px;
+            padding: 20px;
+            border-width: 0px;
+            font-size: 30px;
+            background-color: #dbdee4;
+            border-radius: 8px;
+        }
+        .btn_add_transaction {
+            padding: 20px 50px 20px 50px;
+            background-color: lightskyblue;
+            cursor: pointer;
+            margin-top: 70px;
+            border-radius: 20px;
+        }
+        .text_add_transaction {
+            font-size: 30px;
+        }
+        .btn_add_transaction:hover {
+            scale: 1.1;
+            transition-duration: 0.5s;
+        }
+        .btn_mine {
+            padding: 20px 300px 20px 300px;
+            background-color: orangered;
+            cursor: pointer;
+            margin-top: 150px;
+            border-radius: 20px;
+        }
+        .btn_mine:hover {
+            scale: 1.1;
+            transition-duration: 0.5s;
+        }
+        .divider {
+            width: 1px;
+            background-color: gray;
+            height: 100%;
+        }
+        .btn_fetch {
+            padding: 20px 50px 20px 50px;
+            background-color: lightgreen;
+            cursor: pointer;
+            margin-top: 70px;
+            border-radius: 20px;
+        }
+        .list_block_box {
+            width: 100%;
+        }
+        .block_part {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid gray;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+    </style>
+</html>
